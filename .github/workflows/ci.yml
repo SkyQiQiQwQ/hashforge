@@ -74,6 +74,7 @@ jobs:
         run: |
           mkdir -p package dist
           cp README.md LICENSE package/
+          cp assets/fonts/LICENSE.txt package/FONT-LICENSE.txt
           if [[ "$PLATFORM" == windows-* ]]; then
             cp "target/$TARGET/release/hashforge.exe" "target/$TARGET/release/hashforge-cli.exe" package/
             cp package/*.exe dist/
@@ -103,6 +104,8 @@ jobs:
           pattern: hashforge-*
           merge-multiple: true
           path: dist
+      - name: Include bundled font license
+        run: cp assets/fonts/LICENSE.txt dist/FONT-LICENSE.txt
       - name: Generate checksums
         working-directory: dist
         run: sha256sum hashforge* > SHA256SUMS.txt
@@ -139,7 +142,7 @@ jobs:
           | macOS Apple Silicon | hashforge-macos-arm64.tar.gz |
           | macOS Intel | hashforge-macos-x64.tar.gz |
 
-          每个压缩包包含图形界面、命令行工具、README 和 MIT 许可证。Linux / macOS 解压后运行 hashforge 或 hashforge-cli。Linux 版本在 Ubuntu 22.04 上构建，需要桌面图形环境才能运行 GUI。
+          每个压缩包包含图形界面、命令行工具、README、MIT 许可证和内置思源黑体的 SIL Open Font License。单独下载 Windows EXE 时，请同时保留 FONT-LICENSE.txt。Linux / macOS 解压后运行 hashforge 或 hashforge-cli。Linux 版本在 Ubuntu 22.04 上构建，需要桌面图形环境才能运行 GUI。
 
           SHA256SUMS.txt 提供所有下载文件的 SHA-256 校验值。本次发布已通过三平台格式检查、测试与严格 Clippy，并完成四个目标的 Release 构建。
           EOF

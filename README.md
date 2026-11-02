@@ -14,6 +14,8 @@ SHA-256 is selected by default. Files are read in 1 MiB chunks, so memory use st
 
 界面采用极简 Material 3 风格，Windows 上优先使用微软雅黑。选择或拖入文件后默认计算 SHA-256，可切换算法并一键复制结果。在下方输入框粘贴预期摘要或输入原文，程序会自动识别并比对，无需点击验证按钮。摘要支持全大写、全小写及混合大小写，原文按实际内容严格校验。
 
+程序内置 [思源黑体 Source Han Sans SC](https://github.com/adobe-fonts/source-han-sans)，macOS / Linux 无需安装中文字体即可正常显示界面和原文。Windows 优先使用微软雅黑，缺失时自动回退到内置字体。摘要保留等宽显示。思源黑体使用 SIL Open Font License 1.1，完整许可证见 [字体许可证](assets/fonts/LICENSE.txt) 和 Release 附件 `FONT-LICENSE.txt`。
+
 ## Linux / macOS 下载
 
 在 [Releases](https://github.com/SkyQiQiQwQ/hashforge/releases/latest) 下载对应平台的压缩包：

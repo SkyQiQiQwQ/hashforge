@@ -4,9 +4,10 @@ use eframe::egui::{self, Color32, CornerRadius, Frame, Margin, RichText, Stroke,
 use hashforge::{hash_bytes, hash_file, validate_hex, Algorithm, ALGORITHMS, DEFAULT_ALGORITHM};
 use std::path::PathBuf;
 use std::sync::mpsc::{self, Receiver, Sender};
-use std::sync::Arc;
 use std::thread;
 use std::time::{Duration, Instant};
+
+mod fonts;
 
 const BACKGROUND: Color32 = Color32::from_rgb(246, 248, 247);
 const SURFACE: Color32 = Color32::from_rgb(255, 255, 255);
@@ -98,7 +99,7 @@ impl HashforgeApp {
         visuals.widgets.active.bg_fill = PRIMARY;
         visuals.widgets.active.fg_stroke = Stroke::new(1.0, Color32::WHITE);
         cc.egui_ctx.set_visuals(visuals);
-        install_system_cjk_font(&cc.egui_ctx);
+        fonts::install(&cc.egui_ctx);
 
         let mut style = (*cc.egui_ctx.style_of(egui::Theme::Light)).clone();
         style.spacing.item_spacing = egui::vec2(12.0, 14.0);
@@ -563,58 +564,6 @@ fn run_task(task: Task) -> Result<Output, String> {
 
 fn section_heading(ui: &mut egui::Ui, text: &str) {
     ui.label(RichText::new(text).size(16.0).strong().color(INK));
-}
-
-fn install_system_cjk_font(ctx: &egui::Context) {
-    #[cfg(target_os = "windows")]
-    let candidates = {
-        let windows = std::env::var_os("WINDIR")
-            .map(PathBuf::from)
-            .unwrap_or_else(|| PathBuf::from(r"C:\Windows"));
-        vec![
-            (windows.join("Fonts").join("msyh.ttc"), 0),
-            (windows.join("Fonts").join("simhei.ttf"), 0),
-            (windows.join("Fonts").join("simsun.ttc"), 0),
-        ]
-    };
-    #[cfg(target_os = "macos")]
-    let candidates = vec![(PathBuf::from("/System/Library/Fonts/PingFang.ttc"), 0)];
-    #[cfg(target_os = "linux")]
-    let candidates = vec![
-        (
-            PathBuf::from("/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc"),
-            0,
-        ),
-        (
-            PathBuf::from("/usr/share/fonts/truetype/wqy/wqy-zenhei.ttc"),
-            0,
-        ),
-    ];
-    #[cfg(not(any(target_os = "windows", target_os = "macos", target_os = "linux")))]
-    let candidates: Vec<(PathBuf, u32)> = Vec::new();
-
-    for (path, index) in candidates {
-        let Ok(bytes) = std::fs::read(path) else {
-            continue;
-        };
-        let mut fonts = egui::FontDefinitions::default();
-        fonts.font_data.insert(
-            "hashforge-cjk".to_owned(),
-            Arc::new(egui::FontData::from_blob(Arc::new(bytes), index)),
-        );
-        fonts
-            .families
-            .entry(egui::FontFamily::Proportional)
-            .or_default()
-            .insert(0, "hashforge-cjk".to_owned());
-        fonts
-            .families
-            .entry(egui::FontFamily::Monospace)
-            .or_default()
-            .push("hashforge-cjk".to_owned());
-        ctx.set_fonts(fonts);
-        return;
-    }
 }
 
 fn format_bytes(bytes: u64) -> String {
