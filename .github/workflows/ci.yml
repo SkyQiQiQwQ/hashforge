@@ -73,7 +73,7 @@ jobs:
           PLATFORM: ${{ matrix.platform }}
         run: |
           mkdir -p package dist
-          cp README.md LICENSE package/
+          cp README.md LICENSE CHANGELOG.md package/
           cp assets/fonts/LICENSE.txt package/FONT-LICENSE.txt
           if [[ "$PLATFORM" == windows-* ]]; then
             cp "target/$TARGET/release/hashforge.exe" "target/$TARGET/release/hashforge-cli.exe" package/
@@ -108,7 +108,7 @@ jobs:
         run: cp assets/fonts/LICENSE.txt dist/FONT-LICENSE.txt
       - name: Generate checksums
         working-directory: dist
-        run: sha256sum hashforge* > SHA256SUMS.txt
+        run: sha256sum FONT-LICENSE.txt hashforge* > SHA256SUMS.txt
       - name: Publish all platforms together
         env:
           GH_TOKEN: ${{ github.token }}
@@ -135,6 +135,10 @@ jobs:
 
           源码提交：[$GITHUB_SHA](https://github.com/$GH_REPO/commit/$GITHUB_SHA)
 
+          EOF
+          cat CHANGELOG.md >> "$RUNNER_TEMP/release-notes.md"
+          cat >> "$RUNNER_TEMP/release-notes.md" <<EOF
+
           | 平台 | 下载文件 |
           | --- | --- |
           | Windows x64 | hashforge-windows-x64.zip，或直接下载 hashforge.exe / hashforge-cli.exe |
@@ -142,7 +146,7 @@ jobs:
           | macOS Apple Silicon | hashforge-macos-arm64.tar.gz |
           | macOS Intel | hashforge-macos-x64.tar.gz |
 
-          每个压缩包包含图形界面、命令行工具、README、MIT 许可证和内置思源黑体的 SIL Open Font License。单独下载 Windows EXE 时，请同时保留 FONT-LICENSE.txt。Linux / macOS 解压后运行 hashforge 或 hashforge-cli。Linux 版本在 Ubuntu 22.04 上构建，需要桌面图形环境才能运行 GUI。
+          每个压缩包包含图形界面、命令行工具、README、更新说明、MIT 许可证和内置思源黑体的 SIL Open Font License。单独下载 Windows EXE 时，请同时保留 FONT-LICENSE.txt。Linux / macOS 解压后运行 hashforge 或 hashforge-cli。Linux 版本在 Ubuntu 22.04 上构建，需要桌面图形环境才能运行 GUI。
 
           SHA256SUMS.txt 提供所有下载文件的 SHA-256 校验值。本次发布已通过三平台格式检查、测试与严格 Clippy，并完成四个目标的 Release 构建。
           EOF
